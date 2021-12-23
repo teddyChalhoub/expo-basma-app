@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Text, View, TextInput, Animated } from 'react-native';
 import Button from '../components/Button';
+import Loading from '../components/Loading';
 import LoginBackgroundImage from '../components/LoginBackgroundImage';
 import { styles } from '../components/styles';
-import { size } from '../components/Theme';
+import { colors, size } from '../components/Theme';
 import AdminContext from '../context/admin/AdminContext';
 
 
@@ -12,7 +13,7 @@ const Login = ({ navigation, route }) => {
   const [password, onChangePassword] = useState("");
   const [email, onChangeEmail] = useState("");
 
-  const { state: { session }, actions: { adminLogin } } = useContext(AdminContext);
+  const { state: { loading }, actions: { isLoading, adminLogin } } = useContext(AdminContext);
 
   const reset = () => {
     onChangeEmail("");
@@ -21,7 +22,7 @@ const Login = ({ navigation, route }) => {
   const animate = (value) => {
     return Animated.timing(animation, {
       toValue: value === 1 ? 0 : 1,
-      duration: 550,
+      duration: 450,
       useNativeDriver: false
     })
   }
@@ -60,42 +61,57 @@ const Login = ({ navigation, route }) => {
     inputRange: [0, 1],
     outputRange: ["25%", "40%"]
   })
+
+  const backgroundColor = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.blurWhite, colors.transparent]
+  })
+  const color = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.primary, colors.white]
+  })
   return (
-    <View style={styles.container}>
-      {console.log({ session })}
-      <LoginBackgroundImage
-        opacity={opacity}
-        translateUp={translateUp}
-        animate={animate}
-        height={loginBackground}
-        scale={scale}
-        marginTop={marginTop}
-      />
-      <Animated.View style={[styles.loginContainer, { transform: [{ translateY }] }]}>
-        <Text style={styles.text}>Login</Text>
-        <View>
-          <TextInput
-            placeholder='Email'
-            style={styles.input}
-            onChangeText={onChangeEmail}
-            value={email}
+    <>
+      {loading ? <Loading /> :
+        <View style={styles.container}>
+          <LoginBackgroundImage
+            opacity={opacity}
+            translateUp={translateUp}
+            animate={animate}
+            height={loginBackground}
+            scale={scale}
+            marginTop={marginTop}
+            backgroundColor={backgroundColor}
+            color={color}
           />
-          <TextInput
-            placeholder='Password'
-            style={styles.input}
-            onChangeText={onChangePassword}
-            value={password}
-            secureTextEntry={true}
-          />
-        </View>
-        <Button onPress={() => {
-          adminLogin({ email, password }, navigation)
-          animate(1).start(({ finished }) => {
-            reset();
-          })
-        }} label={"Login"} />
-      </Animated.View>
-    </View>
+
+          <Animated.View style={[styles.loginContainer, { transform: [{ translateY }] }]}>
+            <Text style={styles.text}>Login</Text>
+            <View>
+              <TextInput
+                placeholder='Email'
+                style={styles.input}
+                onChangeText={onChangeEmail}
+                value={email}
+              />
+              <TextInput
+                placeholder='Password'
+                style={styles.input}
+                onChangeText={onChangePassword}
+                value={password}
+                secureTextEntry={true}
+              />
+            </View>
+            <Button onPress={() => {
+              isLoading()
+              adminLogin({ email, password }, navigation)
+              animate(1).start(({ finished }) => {
+                reset();
+              })
+            }} label={"Login"} />
+          </Animated.View>
+        </View>}
+    </>
   );
 }
 

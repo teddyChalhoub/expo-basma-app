@@ -21,6 +21,21 @@ const create = (baseUrl) => {
       }
     });
   }
+  apis.fetchUserAverage = (value, token) => {
+    return api.post(admin.fetchUserPerc, value, {
+      headers: {
+        Authorization: `bearer ${token}`
+      }
+    })
+  }
+
+  apis.getNumberOfCustomers = (token) => {
+    return api.get(admin.totalUsers, {
+      headers: {
+        Authorization: `bearer ${token}`
+      }
+    })
+  }
   return apis;
 }
 

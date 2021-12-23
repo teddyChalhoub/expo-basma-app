@@ -3,9 +3,9 @@ import { Animated, Image, ImageBackground, View } from 'react-native';
 import { AdminImage, LoginImage } from '../assets/images';
 import Button from './Button';
 import { styles } from './styles';
-import { size } from './Theme';
+import { colors, size } from './Theme';
 
-const LoginBackgroundImage = ({ height, animate, opacity, translateUp, scale, marginTop }) => {
+const LoginBackgroundImage = ({ backgroundColor, height, animate, opacity, translateUp, scale, marginTop, color }) => {
   return (
     <Animated.View
       style={{
@@ -23,24 +23,36 @@ const LoginBackgroundImage = ({ height, animate, opacity, translateUp, scale, ma
         }}
         source={LoginImage}
       >
-        <View
-          style={{
-            height: size.height / 2,
-            width: size.width,
+        <Animated.View
+          style={[{
+            height: size.height / 2.3,
+            width: size.width - 50,
             marginTop: "auto",
-            marginBottom: "auto"
-          }}
-        >
-          <Animated.Image source={AdminImage} style={[styles.center, { marginTop, transform: [{ scale }] }]} />
+            marginBottom: "auto",
+            backgroundColor: backgroundColor ? backgroundColor : colors.transparent,
+            borderRadius: 10
+          }, styles.center]}>
+          <Animated.Text style={[
+            styles.center,
+            {
+              fontSize: 50,
+              color,
+              fontFamily: "Inter_900Black",
+              marginTop,
+              transform: [{ scale }]
+            }]}
+          >
+            BASMA
+          </Animated.Text>
           <Animated.View
             style={{
               height, opacity, transform: [{ translateY: translateUp }], overflow: "hidden"
             }}>
             <Button light onPress={() => animate(0).start()} label={"Login"} hidden={true} />
           </Animated.View>
-        </View>
+        </Animated.View>
       </ImageBackground>
-    </Animated.View>
+    </Animated.View >
   );
 }
 
