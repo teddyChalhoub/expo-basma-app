@@ -11,22 +11,23 @@ import { colors, size } from '../components/Theme';
 import AdminContext from '../context/admin/AdminContext';
 import { AntDesign } from '@expo/vector-icons';
 import Model from '../components/Model';
+import ErrorModel from '../components/ErrorModel';
 
 const HomeScreen = ({ navigation, route }) => {
 
   const
-    { state: { loading, averageUsers, totalUsers, visible },
-      actions: { adminLogout, isLoading, isVisible, getTotalCustomers } }
+    { state: { loading, error, totalUsers },
+      actions: { adminLogout, getTotalCustomers } }
 
       = useContext(AdminContext);
 
   useEffect(() => {
-    getTotalCustomers();
+    getTotalCustomers(navigation);
   }, [])
 
   return (
     <>
-      {loading ? <Loading /> :
+      {loading ? <Loading /> : error ? <ErrorModel /> :
         <ImageBackground
           style={{
             flex: 1,
@@ -52,8 +53,6 @@ const HomeScreen = ({ navigation, route }) => {
             <Text style={[styles.text, [{ fontSize: 15, margin: 10 }]]}>Logout</Text>
             <AntDesign name="logout" size={24} color={colors.primary} />
           </TouchableOpacity>
-          {console.log(averageUsers)}
-          {console.log(totalUsers)}
 
           <View style={{
             position: "absolute",

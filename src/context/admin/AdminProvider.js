@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminContext from './AdminContext';
 import services from "../../apis";
+import { NavigationHelpersContext } from '@react-navigation/native';
 const { API } = services;
 
 
@@ -10,7 +11,9 @@ const AdminProvider = ({ children }) => {
     user: ""
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [message, setMessage] = useState("");
   const [averageUsers, setAverageUsers] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
 
@@ -20,6 +23,21 @@ const AdminProvider = ({ children }) => {
 
   const isLoading = () => {
     setLoading(true)
+  }
+  const isError = () => {
+    setError(false);
+  }
+  const handleError = (status, message, navigate) => {
+    setError(true);
+    if (status === 401) {
+      setMessage(message);
+      navigate.replace("Login")
+    } else if (status === 500) {
+      setMessage("Internet Problems")
+    } else {
+      setMessage(message)
+    }
+    setLoading(false);
   }
 
   const adminLogin = async (value, navigation) => {
@@ -35,8 +53,9 @@ const AdminProvider = ({ children }) => {
         // setLoading(false);
       }
     } catch (err) {
-      console.log(err.message)
-      setLoading(false);
+      if (err.response) {
+        handleError(err.response.status, err.response.data.message, navigation)
+      }
     }
   }
 
@@ -53,8 +72,9 @@ const AdminProvider = ({ children }) => {
         setLoading(false);
       }
     } catch (err) {
-      console.log(err.message)
-      setLoading(false);
+      if (err.response) {
+        handleError(err.response.status, err.response.data.message, navigation)
+      }
     }
   }
 
@@ -68,29 +88,30 @@ const AdminProvider = ({ children }) => {
         setVisible(true);
       }
     } catch (err) {
-      console.log(err.message)
-      setLoading(false);
+      if (err.response) {
+        handleError(err.response.status, err.response.data.message, navigation)
+      }
     }
   }
 
-  const getTotalCustomers = async () => {
+  const getTotalCustomers = async (navigation) => {
     try {
       const response = await API.getNumberOfCustomers(session.token);
       const result = response.data;
-      console.log({ result })
       if (result.success) {
         setTotalUsers(result.total_users);
         setLoading(false);
       }
     } catch (err) {
-      console.log(err.message)
-      setLoading(false);
+      if (err.response) {
+        handleError(err.response.status, err.response.data.message, navigation)
+      }
     }
   }
 
   const context = {
-    state: { visible, totalUsers, averageUsers, session, loading },
-    actions: { isLoading, adminLogin, adminLogout, fetchUserAveragePerc, isVisible, getTotalCustomers }
+    state: { message, visible, error, totalUsers, averageUsers, session, loading },
+    actions: { isLoading, adminLogin, adminLogout, isError, fetchUserAveragePerc, isVisible, getTotalCustomers }
   };
 
 

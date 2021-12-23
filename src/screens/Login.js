@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Text, View, TextInput, Animated } from 'react-native';
 import Button from '../components/Button';
+import ErrorModel from '../components/ErrorModel';
 import Loading from '../components/Loading';
 import LoginBackgroundImage from '../components/LoginBackgroundImage';
 import { styles } from '../components/styles';
@@ -13,7 +14,7 @@ const Login = ({ navigation, route }) => {
   const [password, onChangePassword] = useState("");
   const [email, onChangeEmail] = useState("");
 
-  const { state: { loading }, actions: { isLoading, adminLogin } } = useContext(AdminContext);
+  const { state: { loading, error }, actions: { isLoading, adminLogin } } = useContext(AdminContext);
 
   const reset = () => {
     onChangeEmail("");
@@ -72,7 +73,7 @@ const Login = ({ navigation, route }) => {
   })
   return (
     <>
-      {loading ? <Loading /> :
+      {loading ? <Loading /> : error ? <ErrorModel /> :
         <View style={styles.container}>
           <LoginBackgroundImage
             opacity={opacity}
