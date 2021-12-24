@@ -1,9 +1,5 @@
 import Api from "./Api";
 
 export default {
-  API: Api.create("http://192.168.1.108:8000/api")
+  API: Api.create("http://fathomless-shelf-22509.herokuapp.com/api")
 }
-
-// export default {
-//   API: Api.create("http://192.168.1.4:8000/api")
-// }
